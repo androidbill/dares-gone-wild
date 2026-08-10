@@ -74,10 +74,16 @@ node scripts/build-icons.mjs
 
 ## Deploying
 
-Rules are not deployed automatically:
+**Live at https://androidbill.github.io/dares-gone-wild/** — `.github/workflows/pages.yml`
+publishes `public/` to GitHub Pages on every push to `main` (~40s). Nothing to run by hand.
+
+Firestore rules are **not** covered by that workflow — deploy them separately whenever
+`firestore.rules` changes:
 
 ```bash
 firebase deploy --only firestore:rules --project dares-gone-wild-0490
 ```
 
-Hosting is configured in `firebase.json` but has not been deployed yet.
+There is also a Firebase Hosting copy at https://dares-gone-wild-0490.web.app (same
+Firestore behind it) from before Pages was set up. GitHub Pages is the canonical URL;
+`firebase hosting:disable --project dares-gone-wild-0490` retires the other one.
