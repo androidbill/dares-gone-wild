@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1b0a1e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Dares Gone Wild</title>
+  <meta name="description" content="The room-synced dare game. Accept it, bounce it back, or chicken out — then the room votes whether you nailed it. No accounts, just a 4-letter room code.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Dares Gone Wild — the party dare game">
+  <meta property="og:description" content="Accept it, bounce it, or chicken out. The room decides if you nailed it.">
+  <meta property="og:image" content="icons/icon-512.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ============ UPDATE BANNER ============ -->
+  <div id="update-banner" class="update-banner hidden">
+    <span>🆕 A new version is available!</span>
+    <button id="btn-update">Refresh</button>
+  </div>
+
+  <!-- ============ CONNECTION BADGE ============ -->
+  <div id="conn-badge" class="conn-badge hidden">📡 Reconnecting…</div>
+
+  <!-- ============ TOP-RIGHT MENU ============ -->
+  <div id="menu-wrap" class="menu-wrap">
+    <button id="btn-menu" aria-label="Menu">⋮</button>
+    <div id="menu-dropdown" class="menu-dropdown hidden">
+      <button id="menu-refresh">🔄 Refresh</button>
+      <button id="menu-share">📤 Share</button>
+      <button id="menu-themes">🎨 Themes</button>
+      <button id="menu-sound">🔊 Sounds</button>
+      <button id="menu-skip" class="hidden">⏭ Skip This Dare</button>
+      <button id="menu-endgame" class="hidden">🛑 End Game</button>
+      <button id="menu-leave" class="hidden">🚪 Leave Room</button>
+      <button id="menu-about">ℹ️ About</button>
+    </div>
+  </div>
+
+  <!-- ============ ABOUT ============ -->
+  <div id="about-modal" class="modal hidden">
+    <div class="modal-card about-card">
+      <img src="icons/icon-192.png" alt="Dares Gone Wild icon" class="about-icon">
+      <h2>Dares Gone Wild</h2>
+      <p class="about-version" id="about-version"></p>
+      <p class="about-credit">Created by Bill Parsons</p>
+      <button id="btn-about-close" class="btn btn-primary">Close</button>
+    </div>
+  </div>
+
+  <!-- ============ THEMES ============ -->
+  <div id="theme-modal" class="modal hidden">
+    <div class="modal-card">
+      <h2>🎨 Theme Packs</h2>
+      <p class="hint">Pick a vibe for this phone</p>
+      <div id="theme-grid" class="theme-grid"></div>
+      <button id="btn-theme-close" class="btn btn-primary">Done</button>
+    </div>
+  </div>
+
+  <!-- ============ AVATAR PICKER ============ -->
+  <div id="avatar-modal" class="modal hidden">
+    <div class="modal-card">
+      <h2>Pick your avatar</h2>
+      <div id="avatar-picker" class="avatar-picker scrollable"></div>
+      <button id="btn-avatar-close" class="btn btn-primary">Done</button>
+    </div>
+  </div>
+
+  <!-- ============ 18+ GATE ============ -->
+  <div id="age-modal" class="modal hidden">
+    <div class="modal-card">
+      <h2>🌶️ Spicy Decks</h2>
+      <p class="hint" style="text-align:left">
+        The Spicy and Couples decks are written for adults — flirty, personal, and bold.
+        Everyone in the room should be 18 or over and actually up for it.
+      </p>
+      <p class="hint" style="text-align:left">
+        Every player still gets free vetoes. Nobody has to explain a veto, ever.
+      </p>
+      <button id="btn-age-yes" class="btn btn-primary">We're all 18+ — turn it on</button>
+      <button id="btn-age-no" class="link-btn">Never mind</button>
+    </div>
+  </div>
+
+  <!-- ============ HOME ============ -->
+  <section id="screen-home" class="screen">
+    <div class="logo-wrap">
+      <div class="logo-mark">😈</div>
+      <h1 class="logo">DARES<br><span class="logo-sub">GONE WILD</span></h1>
+      <p class="tagline">Accept it. Bounce it. Or chicken out.</p>
+    </div>
+
+    <div class="card">
+      <label class="field-label" for="name-input">Your name &amp; avatar</label>
+      <div class="name-row">
+        <button id="avatar-btn" class="avatar-current" aria-label="Change avatar">😈</button>
+        <input id="name-input" type="text" maxlength="14" placeholder="e.g. Bill" autocomplete="off">
+      </div>
+
+      <button id="btn-create" class="btn btn-primary">🎉 Create a Room</button>
+
+      <div class="divider"><span>or join a room</span></div>
+
+      <div class="join-row">
+        <input id="code-input" type="text" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters">
+        <button id="btn-join" class="btn btn-secondary">Join</button>
+      </div>
+    </div>
+
+    <button id="btn-howto" class="link-btn">How to play</button>
+    <div class="version" id="version-label"></div>
+  </section>
+
+  <!-- ============ HOW TO PLAY ============ -->
+  <div id="howto-modal" class="modal hidden">
+    <div class="modal-card">
+      <h2>How to Play 😈</h2>
+      <ol class="howto-list">
+        <li>Everyone joins the room on their own phone (3+ players is best).</li>
+        <li>Each round one player is the <b>Darer</b> — they pick one of two dare cards for a random <b>Target</b>.</li>
+        <li>The Target can <b>Accept</b> it, <b>Dare Back</b> at double stakes (once per game), or <b>Chicken Out</b>.</li>
+        <li>Chickening out costs you a point, hands one to the Darer, and lands you a punishment card.</li>
+        <li>Accept and the clock starts. Do the dare before the timer runs out!</li>
+        <li>Then everyone else votes: <b>Nailed It</b> for full points, <b>Weak Sauce</b> for half.</li>
+        <li>🔥 Hotter dares are worth more — up to <b>8 points</b> for an Unhinged card.</li>
+        <li>🛡️ You get <b>2 free vetoes</b> per game. No penalty, no explanation needed. Use them.</li>
+        <li>🌶️ The host can switch on adult decks in the lobby — everyone should be 18+ and on board.</li>
+      </ol>
+      <button id="btn-howto-close" class="btn btn-primary">Got it!</button>
+    </div>
+  </div>
+
+  <!-- ============ LOBBY ============ -->
+  <section id="screen-lobby" class="screen hidden">
+    <p class="room-label">ROOM CODE</p>
+    <div class="room-code" id="lobby-code">----</div>
+    <p class="hint">Friends join at <b id="lobby-url"></b></p>
+
+    <div class="qr-wrap" id="qr-wrap">
+      <img id="qr-img" class="qr-img" alt="Scan to join" referrerpolicy="no-referrer" loading="lazy">
+      <p class="hint">📱 Scan to join instantly</p>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Players <span id="lobby-count"></span></h3>
+      <ul id="lobby-players" class="player-list"></ul>
+    </div>
+
+    <div class="card" id="lobby-settings">
+      <h3 class="card-title">Game Settings</h3>
+
+      <label class="field-label">Dare decks</label>
+      <div id="deck-grid" class="deck-grid"></div>
+
+      <label class="field-label" for="heat-select">How wild?</label>
+      <select id="heat-select">
+        <option value="mild">🙂 Warm Up — easy stuff only</option>
+        <option value="medium" selected>😏 Standard — a solid mix</option>
+        <option value="wild">🔥 Unhinged — the hard cards come out</option>
+      </select>
+
+      <label class="field-label" for="time-select">Time to perform</label>
+      <select id="time-select">
+        <option value="30">Card time, capped at 30s</option>
+        <option value="60" selected>Card time, capped at 60s</option>
+        <option value="120">Card time, capped at 2 min</option>
+      </select>
+
+      <label class="field-label" for="target-select">Play to</label>
+      <select id="target-select">
+        <option value="0" selected>No limit — play until you stop</option>
+        <option value="15">First to 15 points</option>
+        <option value="25">First to 25 points</option>
+        <option value="40">First to 40 points</option>
+      </select>
+
+      <label class="field-label" for="veto-select">Free vetoes per player</label>
+      <select id="veto-select">
+        <option value="1">1 veto</option>
+        <option value="2" selected>2 vetoes</option>
+        <option value="3">3 vetoes</option>
+        <option value="99">Unlimited</option>
+      </select>
+
+      <label class="switch-row" for="spicy-toggle">
+        <span>🌶️ Adult decks <span class="hint-inline">18+ — Spicy &amp; Couples</span></span>
+        <input id="spicy-toggle" type="checkbox">
+      </label>
+    </div>
+    <div class="card hidden" id="lobby-settings-view">
+      <p class="settings-summary" id="settings-summary"></p>
+    </div>
+
+    <button id="btn-start" class="btn btn-primary hidden">🚀 Start Game</button>
+    <p id="lobby-wait-msg" class="hint hidden">Waiting for the host to start…</p>
+    <button id="btn-leave-lobby" class="link-btn">Leave room</button>
+  </section>
+
+  <!-- ============ DEAL: darer picks a card ============ -->
+  <section id="screen-deal" class="screen hidden">
+    <p class="round-label" id="deal-round">ROUND 1</p>
+    <div class="matchup">
+      <span class="matchup-who" id="deal-darer">?</span>
+      <span class="matchup-arrow">dares</span>
+      <span class="matchup-who target" id="deal-target">?</span>
+    </div>
+
+    <div id="deal-picker" class="hidden">
+      <p class="big-instruction">Pick their fate 😈</p>
+      <div id="deal-choices" class="deal-choices"></div>
+    </div>
+    <p id="deal-wait-msg" class="hint hidden"></p>
+    <button id="btn-skip-darer" class="link-btn hidden">😴 Darer missing? Deal a card for them</button>
+  </section>
+
+  <!-- ============ DECIDE: target accepts or chickens ============ -->
+  <section id="screen-decide" class="screen hidden">
+    <p class="round-label" id="decide-round">THE DARE</p>
+    <div class="matchup">
+      <span class="matchup-who" id="decide-darer">?</span>
+      <span class="matchup-arrow">dares</span>
+      <span class="matchup-who target" id="decide-target">?</span>
+    </div>
+
+    <div class="dare-card" id="decide-card">
+      <div class="dare-meta">
+        <span class="dare-deck" id="decide-deck"></span>
+        <span class="dare-heat" id="decide-heat"></span>
+      </div>
+      <p class="dare-text" id="decide-text">…</p>
+      <p class="dare-worth" id="decide-worth"></p>
+      <p class="dare-bounced hidden" id="decide-bounced">↩️ BOUNCED BACK — double stakes!</p>
+    </div>
+
+    <div id="decide-buttons" class="hidden">
+      <button id="btn-accept" class="btn btn-primary btn-huge">😈 I'll Do It</button>
+      <div class="two-up">
+        <button id="btn-bounce" class="btn btn-secondary">↩️ Dare Back<span class="btn-sub">double stakes</span></button>
+        <button id="btn-chicken" class="btn btn-danger-outline">🐔 Chicken Out<span class="btn-sub">−1 point</span></button>
+      </div>
+      <button id="btn-veto" class="link-btn">🛡️ Veto this one — no penalty <span id="veto-count"></span></button>
+    </div>
+    <p id="decide-wait-msg" class="hint hidden"></p>
+  </section>
+
+  <!-- ============ PERFORM ============ -->
+  <section id="screen-perform" class="screen hidden">
+    <div id="countdown-overlay" class="countdown-overlay hidden"><span id="countdown-num">3</span></div>
+
+    <div class="timebar-track"><div id="timebar" class="timebar"></div></div>
+    <div class="play-top">
+      <span id="play-timer" class="play-timer">60</span>
+      <span id="play-who" class="play-who"></span>
+    </div>
+
+    <div class="dare-card live" id="perform-card">
+      <div class="dare-meta">
+        <span class="dare-deck" id="perform-deck"></span>
+        <span class="dare-heat" id="perform-heat"></span>
+      </div>
+      <p class="dare-text" id="perform-text">…</p>
+      <p class="dare-worth" id="perform-worth"></p>
+    </div>
+
+    <div id="perform-mine" class="hidden">
+      <button id="btn-done" class="btn btn-primary btn-huge">✅ Done — I did it!</button>
+    </div>
+    <p id="perform-watch-msg" class="hint hidden">Watch closely — you're voting on this in a second 👀</p>
+
+    <div id="reaction-bar" class="reaction-bar">
+      <button class="reaction-btn" data-emoji="😂">😂</button>
+      <button class="reaction-btn" data-emoji="🔥">🔥</button>
+      <button class="reaction-btn" data-emoji="😱">😱</button>
+      <button class="reaction-btn" data-emoji="👏">👏</button>
+    </div>
+  </section>
+
+  <!-- ============ VOTE ============ -->
+  <section id="screen-vote" class="screen hidden">
+    <p class="round-label">DID THEY NAIL IT?</p>
+    <p class="vote-sub" id="vote-sub"></p>
+
+    <div class="dare-card small">
+      <p class="dare-text" id="vote-text">…</p>
+    </div>
+
+    <div id="vote-buttons" class="vote-buttons hidden">
+      <button id="btn-weak" class="btn-vote btn-weak">💩<span>WEAK SAUCE</span></button>
+      <button id="btn-nailed" class="btn-vote btn-nailed">🔥<span>NAILED IT</span></button>
+    </div>
+    <p id="vote-wait-msg" class="hint hidden"></p>
+
+    <div class="card">
+      <h3 class="card-title">Votes in <span id="vote-count"></span></h3>
+      <ul id="vote-list" class="player-list"></ul>
+    </div>
+    <button id="btn-force-vote" class="link-btn hidden">⏱ Someone's AFK — count the votes now</button>
+  </section>
+
+  <!-- ============ SUMMARY ============ -->
+  <section id="screen-summary" class="screen hidden">
+    <p class="round-label" id="summary-round">ROUND OVER</p>
+    <div class="outcome-banner" id="outcome-banner"></div>
+    <div class="summary-score-line" id="summary-headline"></div>
+    <div class="card hidden" id="punishment-card">
+      <h3 class="card-title">🐔 Punishment Card</h3>
+      <p class="dare-text small" id="punishment-text"></p>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Scoreboard</h3>
+      <ul id="summary-scores" class="score-list"></ul>
+    </div>
+
+    <div id="summary-host-panel" class="hidden">
+      <button id="btn-next-round" class="btn btn-primary">⏭ Next Dare</button>
+      <button id="btn-end-game" class="btn btn-danger-outline">End Game</button>
+    </div>
+    <p id="summary-wait-msg" class="hint hidden"></p>
+  </section>
+
+  <!-- ============ GAME OVER ============ -->
+  <section id="screen-gameover" class="screen hidden">
+    <h1 class="gameover-title">🏆 Final Scores</h1>
+    <div id="gameover-headline" class="summary-score-line"></div>
+    <div class="card">
+      <ul id="final-scores" class="score-list final"></ul>
+    </div>
+    <div class="card" id="awards-card">
+      <h3 class="card-title">🎖 Awards</h3>
+      <ul id="awards" class="awards-list"></ul>
+    </div>
+    <button id="btn-play-again" class="btn btn-primary hidden">🔁 Play Again</button>
+    <p id="gameover-wait-msg" class="hint hidden">The host can start a new game…</p>
+    <button id="btn-leave-game" class="link-btn">Leave room</button>
+  </section>
+
+  <!-- ============ INSTALL ============ -->
+  <div id="install-banner" class="install-banner hidden">
+    <span>📲 Install <b>Dares Gone Wild</b> — plays best as an app!</span>
+    <button id="btn-install">Install</button>
+    <button id="btn-install-dismiss" aria-label="Dismiss">✕</button>
+  </div>
+
+  <div id="ios-install-modal" class="modal hidden">
+    <div class="modal-card">
+      <h2>📲 Install Dares Gone Wild</h2>
+      <p class="hint" style="text-align:left">iPhones don't allow one-tap install, but it only takes a second:</p>
+      <ol class="howto-list">
+        <li>Tap the <b>Share</b> button (the square with the ⬆️ arrow) at the bottom of Safari</li>
+        <li>Scroll down and tap <b>Add to Home Screen</b></li>
+        <li>Tap <b>Add</b> — it's on your home screen! 🎉</li>
+      </ol>
+      <button id="btn-ios-close" class="btn btn-primary">Got it!</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
