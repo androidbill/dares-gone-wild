@@ -84,6 +84,6 @@ Firestore rules are **not** covered by that workflow — deploy them separately 
 firebase deploy --only firestore:rules --project dares-gone-wild-0490
 ```
 
-There is also a Firebase Hosting copy at https://dares-gone-wild-0490.web.app (same
-Firestore behind it) from before Pages was set up. GitHub Pages is the canonical URL;
-`firebase hosting:disable --project dares-gone-wild-0490` retires the other one.
+Firebase is used for Firestore **only** — there is deliberately no `hosting` block in
+`firebase.json`, so a bare `firebase deploy` can't stand up a second, stale copy of the
+app alongside the Pages one.
